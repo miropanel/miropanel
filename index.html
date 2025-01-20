@@ -354,6 +354,87 @@
         .builds-data-header span {
             display: none;
         }
+
+        /* Styles pour l'interface Chat */
+        .chat-panel {
+            position: fixed;
+            top: 60px;
+            left: 220px;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            margin-bottom: 80px;
+        }
+
+        .chat-input-container {
+            position: fixed;
+            bottom: 0;
+            left: 220px;
+            right: 0;
+            border-top: 1px solid #e3e3e3;
+            padding: 20px;
+            background: #ffffff;
+            z-index: 100;
+        }
+
+        .chat-input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: none;
+            min-height: 24px;
+            max-height: 200px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: start;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e3e3e3;
+            margin-right: 16px;
+        }
+
+        .message-content {
+            flex-grow: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .message-username {
+            font-weight: bold;
+            color: #333;
+            margin-right: 8px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .message-text {
+            color: #333;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -392,6 +473,7 @@
                 <li class="active">Bots</li>
                 <li>Tasks</li>
                 <li>Builds</li>
+                <li>Pour discuter avec moi</li>
             </ul>
         </div>
 
@@ -471,6 +553,28 @@
         </div>
     </div>
 
+    <!-- Ajouter le HTML de l'interface chat -->
+    <div class="chat-panel" style="display: none;">
+        <div class="chat-messages">
+            <!-- Messages exemple -->
+            <div class="message">
+                <div class="message-avatar"></div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-username">Utilisateur</span>
+                        <span class="message-time">Aujourd'hui à 12:00</span>
+                    </div>
+                    <div class="message-text">
+                        Bienvenue dans le chat !
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <textarea class="chat-input" placeholder="Envoyer un message..."></textarea>
+        </div>
+    </div>
+
     <script>
         // Création des particules
         function createParticles() {
@@ -540,6 +644,7 @@
                 document.querySelector('.main-content').style.display = 'none';
                 document.querySelector('.tasks-panel').style.display = 'none';
                 document.querySelector('.builds-panel').style.display = 'none';
+                document.querySelector('.chat-panel').style.display = 'none';
 
                 // Afficher l'interface correspondante
                 if (this.textContent === 'Tasks') {
@@ -548,6 +653,9 @@
                     document.querySelector('.main-content').style.display = 'block';
                 } else if (this.textContent === 'Builds') {
                     document.querySelector('.builds-panel').style.display = 'block';
+                } else if (this.textContent === 'Pour discuter avec moi') {
+                    document.querySelector('.chat-panel').style.display = 'block';
+                    loadMessages();
                 }
             });
         });
@@ -595,6 +703,59 @@
 
         // Ajouter l'écouteur d'événement au bouton Build
         document.querySelector('.builds-button').addEventListener('click', handleBuild);
+
+        // Ajouter ces nouvelles fonctions pour gérer le chat
+        function saveMessage(message) {
+            // Récupérer les messages existants ou créer un tableau vide
+            let messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+            messages.push({
+                username: 'Utilisateur',
+                time: new Date().toLocaleString('fr-FR'),
+                text: message
+            });
+            // Sauvegarder dans localStorage
+            localStorage.setItem('chatMessages', JSON.stringify(messages));
+        }
+
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+            const chatMessages = document.querySelector('.chat-messages');
+            chatMessages.innerHTML = ''; // Vider le conteneur
+
+            messages.forEach(msg => {
+                const messageHTML = `
+                    <div class="message">
+                        <div class="message-avatar"></div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-username">${msg.username}</span>
+                                <span class="message-time">${msg.time}</span>
+                            </div>
+                            <div class="message-text">
+                                ${msg.text}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.innerHTML += messageHTML;
+            });
+
+            // Scroll vers le bas
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Ajouter l'événement pour envoyer un message avec Entrée
+        document.querySelector('.chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const message = this.value.trim();
+                if (message) {
+                    saveMessage(message);
+                    loadMessages();
+                    this.value = ''; // Vider l'input
+                }
+            }
+        });
     </script>
 </body>
 </html>
