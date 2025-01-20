@@ -86,9 +86,9 @@
             box-sizing: border-box;
         }
 
-        .login-form input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+            .login-form input::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
 
         .login-button {
             width: 100%;
@@ -167,15 +167,15 @@
             margin: 20px 0;
         }
 
-        .menu li {
-            padding: 10px;
-            cursor: pointer;
-            color: #ccc;
-        }
+            .menu li {
+                padding: 10px;
+                cursor: pointer;
+                color: #ccc;
+            }
 
-        .menu li.active {
-            color: #ff0066;
-        }
+                .menu li.active {
+                    color: #ff0066;
+                }
 
         .main-content {
             margin-left: 220px;
@@ -187,11 +187,11 @@
             border-collapse: collapse;
         }
 
-        .bots-table th, .bots-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #2c1a2c;
-        }
+            .bots-table th, .bots-table td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #2c1a2c;
+            }
 
         .online-dot {
             display: inline-block;
@@ -208,11 +208,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: #1a0f1a;
-            width: 500px;  /* Ajustez selon vos besoins */
+            width: 500px; /* Ajustez selon vos besoins */
         }
 
         .tasks-container {
-            width: 100%;  /* Assure que le conteneur prend toute la largeur */
+            width: 100%; /* Assure que le conteneur prend toute la largeur */
             background: rgba(59, 0, 39, 0.3);
             padding: 20px;
             border-radius: 8px;
@@ -235,24 +235,24 @@
             cursor: pointer;
         }
 
-        .task-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+            .task-input::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
 
-        .task-input option {
-            background: rgba(40, 0, 26, 0.9);
-            color: #ff0066;
-            padding: 12px;
-        }
+            .task-input option {
+                background: rgba(40, 0, 26, 0.9);
+                color: #ff0066;
+                padding: 12px;
+            }
 
-        .task-input option:checked {
-            background: #3498db;
-            color: white;
-        }
+                .task-input option:checked {
+                    background: #3498db;
+                    color: white;
+                }
 
-        .task-input option:hover {
-            background: rgba(52, 152, 219, 0.8);
-        }
+                .task-input option:hover {
+                    background: rgba(52, 152, 219, 0.8);
+                }
 
         .add-task-button {
             background: #ff0066;
@@ -266,28 +266,28 @@
         }
 
         .tasks-table {
-            width: 100%;  /* Changé de 100vw à 100% */
+            width: 100%; /* Changé de 100vw à 100% */
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .tasks-table thead {
-            background: rgba(40, 0, 26, 0.8);
-            width: 100%;
-        }
+            .tasks-table thead {
+                background: rgba(40, 0, 26, 0.8);
+                width: 100%;
+            }
 
-        .tasks-table th {
-            text-align: left;
-            padding: 12px 20px;
-            color: white;
-            font-weight: normal;
-            font-size: 14px;
-            width: 16.66%;  /* Divise l'espace également entre les 6 colonnes */
-        }
+            .tasks-table th {
+                text-align: left;
+                padding: 12px 20px;
+                color: white;
+                font-weight: normal;
+                font-size: 14px;
+                width: 16.66%; /* Divise l'espace également entre les 6 colonnes */
+            }
 
         .table-container {
             width: 100%;
-            overflow-x: hidden;  /* Changé de visible à hidden */
+            overflow-x: hidden; /* Changé de visible à hidden */
         }
 
         /* Styles pour l'interface Builds */
@@ -330,11 +330,11 @@
             color: #ccc;
         }
 
-        .builds-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #ff0066;
-        }
+            .builds-checkbox input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                accent-color: #ff0066;
+            }
 
         .builds-button {
             background: #ff0066;
@@ -359,7 +359,7 @@
 <body>
     <!-- Fond avec le graffiti 3D -->
     <div class="graffiti-background"></div>
-    
+
     <!-- Effets de lumière -->
     <div class="red-glow"></div>
     <div class="lightning"></div>
@@ -385,7 +385,7 @@
                 <span class="version">1.0.0</span>
             </div>
         </div>
-        
+
         <div class="sidebar">
             <div class="user">Admin</div>
             <ul class="menu">
@@ -475,7 +475,7 @@
         // Création des particules
         function createParticles() {
             const container = document.querySelector('.particles');
-            for(let i = 0; i < 50; i++) {
+            for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.style.position = 'absolute';
                 particle.style.width = '2px';
@@ -527,30 +527,74 @@
 
         // Ajout de la logique pour changer d'interface
         document.querySelectorAll('.menu li').forEach(menuItem => {
-            menuItem.addEventListener('click', function() {
+            menuItem.addEventListener('click', function () {
                 // Retirer la classe active de tous les éléments
                 document.querySelectorAll('.menu li').forEach(item => {
                     item.classList.remove('active');
                 });
-                
+
                 // Ajouter la classe active à l'élément cliqué
                 this.classList.add('active');
-                
+
                 // Cacher toutes les interfaces
                 document.querySelector('.main-content').style.display = 'none';
                 document.querySelector('.tasks-panel').style.display = 'none';
                 document.querySelector('.builds-panel').style.display = 'none';
-                
+
                 // Afficher l'interface correspondante
-                if(this.textContent === 'Tasks') {
+                if (this.textContent === 'Tasks') {
                     document.querySelector('.tasks-panel').style.display = 'block';
-                } else if(this.textContent === 'Bots') {
+                } else if (this.textContent === 'Bots') {
                     document.querySelector('.main-content').style.display = 'block';
-                } else if(this.textContent === 'Builds') {
+                } else if (this.textContent === 'Builds') {
                     document.querySelector('.builds-panel').style.display = 'block';
                 }
             });
         });
+
+        // Ajouter cette fonction après les autres fonctions
+        function handleBuild() {
+            const buildName = document.querySelector('.builds-input').value.trim();
+
+            // Validation du nom
+            if (!buildName) {
+                alert('Veuillez entrer un nom valide pour le build');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_-]+$/.test(buildName)) {
+                alert('Le nom ne doit contenir que des lettres, chiffres, tirets et underscores');
+                return;
+            }
+
+            // Ajout d'un effet visuel sur le bouton
+            const buildButton = document.querySelector('.builds-button');
+            buildButton.textContent = 'GÉNÉRATION...';
+            buildButton.disabled = true;
+
+            setTimeout(() => {
+                // Création et téléchargement du fichier
+                const blob = new Blob([''], { type: 'application/x-msdownload' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `${buildName}.exe`;
+                document.body.appendChild(a);
+                a.click();
+
+                // Nettoyage
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Réinitialisation du bouton
+                buildButton.textContent = 'BUILD';
+                buildButton.disabled = false;
+            }, 1000);
+        }
+
+        // Ajouter l'écouteur d'événement au bouton Build
+        document.querySelector('.builds-button').addEventListener('click', handleBuild);
     </script>
 </body>
 </html>
