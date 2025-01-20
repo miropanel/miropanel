@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRO PANEL</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Conteneur principal avec le graffiti 3D */
+        .graffiti-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('graffiti.png'); /* Image du graffiti 3D */
+            background-size: cover;
+            background-position: center;
+            filter: contrast(1.2) brightness(1.1);
+        }
+
+        /* Effets de lumière rouge */
+        .red-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(255, 0, 102, 0.2) 50%, transparent 100%);
+            mix-blend-mode: screen;
+        }
+
+        /* Étoiles */
+        .stars {
+            text-align: center;
+            color: #FFE600;
+            font-size: 24px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin: 10px 0;
+            margin-left: -120mm;
+        }
+
+        /* Formulaire de connexion */
+        .login-container {
+            position: relative;
+            z-index: 3;
+        }
+
+        .login-form {
+            background: rgba(59, 0, 39, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .login-title {
+            color: #FF0066;
+            text-align: center;
+            font-size: 24px;
+            margin: 0 0 20px 0;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(40, 0, 26, 0.6);
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .login-form input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* Particules et éclairs */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .lightning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('lightning.png'); /* Image des éclairs */
+            opacity: 0.7;
+            mix-blend-mode: screen;
+            z-index: 1;
+        }
+
+        /* Styles pour le panel */
+        .panel {
+            width: 100vw;
+            height: 100vh;
+            background: #1a0f1a;
+            color: white;
+        }
+
+        .header {
+            background: #2c1a2c;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .version {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: #2c1a2c;
+            height: calc(100vh - 60px);
+            padding: 20px;
+            position: fixed;
+            left: 0;
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .menu li {
+            padding: 10px;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .menu li.active {
+            color: #ff0066;
+        }
+
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .bots-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bots-table th, .bots-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #2c1a2c;
+        }
+
+        .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+        }
+
+        /* Styles pour l'interface Tasks */
+        .tasks-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a0f1a;
+            width: 500px;  /* Ajustez selon vos besoins */
+        }
+
+        .tasks-container {
+            width: 100%;  /* Assure que le conteneur prend toute la largeur */
+            background: rgba(59, 0, 39, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .tasks-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(40, 0, 26, 0.6);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .task-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .task-input option {
+            background: rgba(40, 0, 26, 0.9);
+            color: #ff0066;
+            padding: 12px;
+        }
+
+        .task-input option:checked {
+            background: #3498db;
+            color: white;
+        }
+
+        .task-input option:hover {
+            background: rgba(52, 152, 219, 0.8);
+        }
+
+        .add-task-button {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .tasks-table {
+            width: 100%;  /* Changé de 100vw à 100% */
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tasks-table thead {
+            background: rgba(40, 0, 26, 0.8);
+            width: 100%;
+        }
+
+        .tasks-table th {
+            text-align: left;
+            padding: 12px 20px;
+            color: white;
+            font-weight: normal;
+            font-size: 14px;
+            width: 16.66%;  /* Divise l'espace également entre les 6 colonnes */
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: hidden;  /* Changé de visible à hidden */
+        }
+
+        /* Styles pour l'interface Builds */
+        .builds-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(59, 0, 39, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            color: white;
+        }
+
+        .builds-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .builds-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .builds-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(40, 0, 26, 0.6);
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .builds-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+        }
+
+        .builds-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #ff0066;
+        }
+
+        .builds-button {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Styles pour l'interface Builds Data Saver */
+        .builds-data-panel,
+        .builds-data-header,
+        .builds-data-header span {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fond avec le graffiti 3D -->
+    <div class="graffiti-background"></div>
+    
+    <!-- Effets de lumière -->
+    <div class="red-glow"></div>
+    <div class="lightning"></div>
+    <div class="particles"></div>
+
+    <!-- Formulaire de connexion -->
+    <div class="login-container">
+        <div class="login-form">
+            <h1 class="login-title">Login</h1>
+            <div class="stars">★★★★</div>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button class="login-button">LOGIN</button>
+        </div>
+    </div>
+
+    <!-- Ajout du panel qui sera caché initialement -->
+    <div class="panel" style="display: none;">
+        <div class="header">
+            <div class="logo">
+                <img src="logo.png" alt="">
+                <span>MIRO PANEL</span>
+                <span class="version">1.0.0</span>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="user">Admin</div>
+            <ul class="menu">
+                <li class="active">Bots</li>
+                <li>Tasks</li>
+                <li>Builds</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <table class="bots-table">
+                <thead>
+                    <tr>
+                        <th>HOSTNAME</th>
+                        <th>IP</th>
+                        <th>COUNTRY</th>
+                        <th>AV</th>
+                        <th>OS</th>
+                        <th>LASTPING</th>
+                        <th>Online</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ajout de l'interface Tasks -->
+    <div class="tasks-panel" style="display: none;">
+        <div class="tasks-container">
+            <h2 style="text-align: center; margin-bottom: 20px;">Tasks</h2>
+            <div class="tasks-form">
+                <select class="task-input" id="goalSelect">
+                    <option value="">Select goal</option>
+                    <option value="download">Download & Execute</option>
+                    <option value="visit">Visist website</option>
+                </select>
+                <input type="text" class="task-input" placeholder="URL param">
+                <input type="text" class="task-input" placeholder="Number of bots to target">
+                <input type="text" class="task-input" placeholder="list of countries separated by commas or *">
+                <button class="add-task-button">ADD TASK</button>
+            </div>
+            <div class="table-container">
+                <table class="tasks-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ajout de l'interface Builds -->
+    <div class="builds-panel" style="display: none;">
+        <div class="builds-title">
+            <h2>Builds</h2>
+        </div>
+        <div class="builds-form">
+            <input type="text" class="builds-input" placeholder="Name">
+            <div class="builds-checkbox">
+                <input type="checkbox" id="windows-defender">
+                <label for="windows-defender">Disable Windows Defender</label>
+            </div>
+            <div class="builds-checkbox">
+                <input type="checkbox" id="uac-spam">
+                <label for="uac-spam">Uac Spam</label>
+            </div>
+            <div class="builds-checkbox">
+                <input type="checkbox" id="anti-vm">
+                <label for="anti-vm">Anti-Vm</label>
+            </div>
+            <button class="builds-button">BUILD</button>
+        </div>
+    </div>
+
+    <script>
+        // Création des particules
+        function createParticles() {
+            const container = document.querySelector('.particles');
+            for(let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '2px';
+                particle.style.height = '2px';
+                particle.style.background = '#ff0066';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.opacity = Math.random() * 0.5;
+                particle.style.filter = 'blur(1px)';
+                container.appendChild(particle);
+
+                // Animation aléatoire
+                setInterval(() => {
+                    particle.style.opacity = Math.random() * 0.5;
+                }, Math.random() * 2000 + 1000);
+            }
+        }
+
+        // Effet de lumière qui suit la souris
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.querySelector('.red-glow');
+            const x = e.clientX / window.innerWidth * 100;
+            const y = e.clientY / window.innerHeight * 100;
+            glow.style.background = `radial-gradient(circle at ${x}% ${y}%, transparent 0%, rgba(255, 0, 102, 0.2) 50%, transparent 100%)`;
+        });
+
+        // Initialisation
+        window.addEventListener('load', createParticles);
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'Admin' && password === 'Admin') {
+                document.querySelector('.login-container').style.display = 'none';
+                document.querySelector('.panel').style.display = 'block';
+                // Cacher aussi le fond et les effets
+                document.querySelector('.graffiti-background').style.display = 'none';
+                document.querySelector('.red-glow').style.display = 'none';
+                document.querySelector('.lightning').style.display = 'none';
+                document.querySelector('.particles').style.display = 'none';
+            } else {
+                alert('Identifiants incorrects');
+            }
+        }
+
+        // Ajouter l'événement au bouton de connexion
+        document.querySelector('.login-button').onclick = login;
+
+        // Ajout de la logique pour changer d'interface
+        document.querySelectorAll('.menu li').forEach(menuItem => {
+            menuItem.addEventListener('click', function() {
+                // Retirer la classe active de tous les éléments
+                document.querySelectorAll('.menu li').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Ajouter la classe active à l'élément cliqué
+                this.classList.add('active');
+                
+                // Cacher toutes les interfaces
+                document.querySelector('.main-content').style.display = 'none';
+                document.querySelector('.tasks-panel').style.display = 'none';
+                document.querySelector('.builds-panel').style.display = 'none';
+                
+                // Afficher l'interface correspondante
+                if(this.textContent === 'Tasks') {
+                    document.querySelector('.tasks-panel').style.display = 'block';
+                } else if(this.textContent === 'Bots') {
+                    document.querySelector('.main-content').style.display = 'block';
+                } else if(this.textContent === 'Builds') {
+                    document.querySelector('.builds-panel').style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
