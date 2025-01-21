@@ -580,15 +580,15 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Configuration Firebase (remplacez par vos propres informations)
+        // Configuration Firebase avec vos vraies valeurs (à copier depuis votre console Firebase)
         const firebaseConfig = {
-            apiKey: "VOTRE_API_KEY",
-            authDomain: "votre-app.firebaseapp.com",
-            databaseURL: "https://votre-app.firebaseio.com",
-            projectId: "votre-project-id",
-            storageBucket: "votre-app.appspot.com",
-            messagingSenderId: "votre-sender-id",
-            appId: "votre-app-id"
+            apiKey: "AIzaSyDHVvqZpQjkCGJbdTLGFj9_cHaqXxHG1Pk",
+            authDomain: "miropanel-chat.firebaseapp.com",
+            databaseURL: "https://miropanel-chat-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "miropanel-chat",
+            storageBucket: "miropanel-chat.appspot.com",
+            messagingSenderId: "485152677165",
+            appId: "1:485152677165:web:9e6f9d8f9f9f9d8f9f9f9d"
         };
 
         // Initialisation de Firebase
@@ -596,22 +596,33 @@
         const database = getDatabase(app);
         const messagesRef = ref(database, 'messages');
 
-        // Modification des fonctions de gestion des messages
+        // Fonction modifiée pour sauvegarder les messages
         function saveMessage(message) {
+            if (message.trim() === '') return; // Ne pas envoyer de message vide
+            
             push(messagesRef, {
                 username: 'Utilisateur',
                 time: new Date().toLocaleString('fr-FR'),
-                text: message
+                text: message.trim()
             });
         }
 
+        // Fonction modifiée pour charger les messages
         function loadMessages() {
             const chatMessages = document.querySelector('.chat-messages');
             
             onValue(messagesRef, (snapshot) => {
                 chatMessages.innerHTML = '';
+                const messages = [];
+                
                 snapshot.forEach((childSnapshot) => {
-                    const msg = childSnapshot.val();
+                    messages.push(childSnapshot.val());
+                });
+
+                // Trier les messages par date si nécessaire
+                messages.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+                messages.forEach(msg => {
                     const messageHTML = `
                         <div class="message">
                             <div class="message-avatar"></div>
@@ -628,6 +639,8 @@
                     `;
                     chatMessages.innerHTML += messageHTML;
                 });
+
+                // Scroll vers le bas après l'ajout des messages
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             });
         }
@@ -635,6 +648,18 @@
         // Rendre les fonctions disponibles globalement
         window.saveMessage = saveMessage;
         window.loadMessages = loadMessages;
+
+        // Ajouter l'événement pour l'envoi de message
+        document.querySelector('.chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const message = this.value.trim();
+                if (message) {
+                    saveMessage(message);
+                    this.value = ''; // Vider l'input après l'envoi
+                }
+            }
+        });
     </script>
 
     <script>
@@ -765,19 +790,6 @@
 
         // Ajouter l'écouteur d'événement au bouton Build
         document.querySelector('.builds-button').addEventListener('click', handleBuild);
-
-        // Ajouter l'événement pour envoyer un message avec Entrée
-        document.querySelector('.chat-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const message = this.value.trim();
-                if (message) {
-                    saveMessage(message);
-                    loadMessages();
-                    this.value = ''; // Vider l'input
-                }
-            }
-        });
     </script>
 </body>
 </html>
