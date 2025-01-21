@@ -575,6 +575,68 @@
         </div>
     </div>
 
+    <script type="module">
+        // Import des fonctions Firebase nécessaires
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Configuration Firebase (remplacez par vos propres informations)
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY",
+            authDomain: "votre-app.firebaseapp.com",
+            databaseURL: "https://votre-app.firebaseio.com",
+            projectId: "votre-project-id",
+            storageBucket: "votre-app.appspot.com",
+            messagingSenderId: "votre-sender-id",
+            appId: "votre-app-id"
+        };
+
+        // Initialisation de Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const messagesRef = ref(database, 'messages');
+
+        // Modification des fonctions de gestion des messages
+        function saveMessage(message) {
+            push(messagesRef, {
+                username: 'Utilisateur',
+                time: new Date().toLocaleString('fr-FR'),
+                text: message
+            });
+        }
+
+        function loadMessages() {
+            const chatMessages = document.querySelector('.chat-messages');
+            
+            onValue(messagesRef, (snapshot) => {
+                chatMessages.innerHTML = '';
+                snapshot.forEach((childSnapshot) => {
+                    const msg = childSnapshot.val();
+                    const messageHTML = `
+                        <div class="message">
+                            <div class="message-avatar"></div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-username">${msg.username}</span>
+                                    <span class="message-time">${msg.time}</span>
+                                </div>
+                                <div class="message-text">
+                                    ${msg.text}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.innerHTML += messageHTML;
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+
+        // Rendre les fonctions disponibles globalement
+        window.saveMessage = saveMessage;
+        window.loadMessages = loadMessages;
+    </script>
+
     <script>
         // Création des particules
         function createParticles() {
@@ -704,48 +766,8 @@
         // Ajouter l'écouteur d'événement au bouton Build
         document.querySelector('.builds-button').addEventListener('click', handleBuild);
 
-        // Ajouter ces nouvelles fonctions pour gérer le chat
-        function saveMessage(message) {
-            // Récupérer les messages existants ou créer un tableau vide
-            let messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-            messages.push({
-                username: 'Utilisateur',
-                time: new Date().toLocaleString('fr-FR'),
-                text: message
-            });
-            // Sauvegarder dans localStorage
-            localStorage.setItem('chatMessages', JSON.stringify(messages));
-        }
-
-        function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-            const chatMessages = document.querySelector('.chat-messages');
-            chatMessages.innerHTML = ''; // Vider le conteneur
-
-            messages.forEach(msg => {
-                const messageHTML = `
-                    <div class="message">
-                        <div class="message-avatar"></div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-username">${msg.username}</span>
-                                <span class="message-time">${msg.time}</span>
-                            </div>
-                            <div class="message-text">
-                                ${msg.text}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                chatMessages.innerHTML += messageHTML;
-            });
-
-            // Scroll vers le bas
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
         // Ajouter l'événement pour envoyer un message avec Entrée
-        document.querySelector('.chat-input').addEventListener('keypress', function(e) {
+        document.querySelector('.chat-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 const message = this.value.trim();
