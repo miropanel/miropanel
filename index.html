@@ -354,87 +354,6 @@
         .builds-data-header span {
             display: none;
         }
-
-        /* Styles pour l'interface Chat */
-        .chat-panel {
-            position: fixed;
-            top: 60px;
-            left: 220px;
-            right: 0;
-            bottom: 0;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            margin-bottom: 80px;
-        }
-
-        .chat-input-container {
-            position: fixed;
-            bottom: 0;
-            left: 220px;
-            right: 0;
-            border-top: 1px solid #e3e3e3;
-            padding: 20px;
-            background: #ffffff;
-            z-index: 100;
-        }
-
-        .chat-input {
-            width: calc(100% - 24px);
-            padding: 12px;
-            border: 1px solid #e3e3e3;
-            border-radius: 8px;
-            font-size: 14px;
-            resize: none;
-            min-height: 24px;
-            max-height: 200px;
-        }
-
-        .message {
-            display: flex;
-            margin-bottom: 20px;
-            align-items: start;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e3e3e3;
-            margin-right: 16px;
-        }
-
-        .message-content {
-            flex-grow: 1;
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .message-username {
-            font-weight: bold;
-            color: #333;
-            margin-right: 8px;
-        }
-
-        .message-time {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .message-text {
-            color: #333;
-            line-height: 1.4;
-        }
     </style>
 </head>
 <body>
@@ -473,7 +392,6 @@
                 <li class="active">Bots</li>
                 <li>Tasks</li>
                 <li>Builds</li>
-                <li>Pour discuter avec moi</li>
             </ul>
         </div>
 
@@ -553,115 +471,6 @@
         </div>
     </div>
 
-    <!-- Ajouter le HTML de l'interface chat -->
-    <div class="chat-panel" style="display: none;">
-        <div class="chat-messages">
-            <!-- Messages exemple -->
-            <div class="message">
-                <div class="message-avatar"></div>
-                <div class="message-content">
-                    <div class="message-header">
-                        <span class="message-username">Utilisateur</span>
-                        <span class="message-time">Aujourd'hui à 12:00</span>
-                    </div>
-                    <div class="message-text">
-                        Bienvenue dans le chat !
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="chat-input-container">
-            <textarea class="chat-input" placeholder="Envoyer un message..."></textarea>
-        </div>
-    </div>
-
-    <script type="module">
-        // Import des fonctions Firebase nécessaires
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        // Configuration Firebase avec vos vraies valeurs (à copier depuis votre console Firebase)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDHVvqZpQjkCGJbdTLGFj9_cHaqXxHG1Pk",
-            authDomain: "miropanel-chat.firebaseapp.com",
-            databaseURL: "https://miropanel-chat-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "miropanel-chat",
-            storageBucket: "miropanel-chat.appspot.com",
-            messagingSenderId: "485152677165",
-            appId: "1:485152677165:web:9e6f9d8f9f9f9d8f9f9f9d"
-        };
-
-        // Initialisation de Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const messagesRef = ref(database, 'messages');
-
-        // Fonction modifiée pour sauvegarder les messages
-        function saveMessage(message) {
-            if (message.trim() === '') return; // Ne pas envoyer de message vide
-            
-            push(messagesRef, {
-                username: 'Utilisateur',
-                time: new Date().toLocaleString('fr-FR'),
-                text: message.trim()
-            });
-        }
-
-        // Fonction modifiée pour charger les messages
-        function loadMessages() {
-            const chatMessages = document.querySelector('.chat-messages');
-            
-            onValue(messagesRef, (snapshot) => {
-                chatMessages.innerHTML = '';
-                const messages = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    messages.push(childSnapshot.val());
-                });
-
-                // Trier les messages par date si nécessaire
-                messages.sort((a, b) => new Date(a.time) - new Date(b.time));
-
-                messages.forEach(msg => {
-                    const messageHTML = `
-                        <div class="message">
-                            <div class="message-avatar"></div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="message-username">${msg.username}</span>
-                                    <span class="message-time">${msg.time}</span>
-                                </div>
-                                <div class="message-text">
-                                    ${msg.text}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    chatMessages.innerHTML += messageHTML;
-                });
-
-                // Scroll vers le bas après l'ajout des messages
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-        }
-
-        // Rendre les fonctions disponibles globalement
-        window.saveMessage = saveMessage;
-        window.loadMessages = loadMessages;
-
-        // Ajouter l'événement pour l'envoi de message
-        document.querySelector('.chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const message = this.value.trim();
-                if (message) {
-                    saveMessage(message);
-                    this.value = ''; // Vider l'input après l'envoi
-                }
-            }
-        });
-    </script>
-
     <script>
         // Création des particules
         function createParticles() {
@@ -731,7 +540,6 @@
                 document.querySelector('.main-content').style.display = 'none';
                 document.querySelector('.tasks-panel').style.display = 'none';
                 document.querySelector('.builds-panel').style.display = 'none';
-                document.querySelector('.chat-panel').style.display = 'none';
 
                 // Afficher l'interface correspondante
                 if (this.textContent === 'Tasks') {
@@ -740,9 +548,6 @@
                     document.querySelector('.main-content').style.display = 'block';
                 } else if (this.textContent === 'Builds') {
                     document.querySelector('.builds-panel').style.display = 'block';
-                } else if (this.textContent === 'Pour discuter avec moi') {
-                    document.querySelector('.chat-panel').style.display = 'block';
-                    loadMessages();
                 }
             });
         });
